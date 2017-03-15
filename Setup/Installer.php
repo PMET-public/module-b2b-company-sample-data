@@ -44,12 +44,8 @@ class Installer implements Setup\SampleData\InstallerInterface
     public function install()
     {
        $this->salesrepSetup->install(['MagentoEse_B2BCompanySampleData::fixtures/salesreps.csv']);
-       echo ("sales rep\n");
-        $this->customerSetup->install(['MagentoEse_B2BCompanySampleData::fixtures/customers.csv']);
-        echo ("scustomerSetup\n");
-        $this->companySetup->install(['MagentoEse_B2BCompanySampleData::fixtures/companies.csv']);
-        echo ("companySetup\n");
-        $this->teamSetup->install(['MagentoEse_B2BCompanySampleData::fixtures/teams.csv']);
-        echo ("teamSetup\n");
+       $this->customerSetup->install(['MagentoEse_B2BCompanySampleData::fixtures/customers.csv']);
+       $this->companySetup->install(['MagentoEse_B2BCompanySampleData::fixtures/companies.csv']);
+       $this->teamSetup->install(['MagentoEse_B2BCompanySampleData::fixtures/teams.csv']);
     }
 }

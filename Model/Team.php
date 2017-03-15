@@ -24,6 +24,7 @@
      protected $companyManagement;
      protected $customer;
      protected $acl;
+     protected $resourceConnection;
 
      public function __construct(
          SampleDataContext $sampleDataContext,
@@ -34,7 +35,8 @@
          \Magento\Company\Model\CompanyRepository $companyRepository,
          \Magento\Company\Model\CompanyManagement $companyManagement,
          \Magento\Customer\Api\CustomerRepositoryInterface $customer,
-         \Magento\Company\Api\AclInterface $acl
+         \Magento\Company\Api\AclInterface $acl,
+        \Magento\Framework\App\ResourceConnection $resourceConnection
      )
      {
          $this->fixtureManager = $sampleDataContext->getFixtureManager();
@@ -47,6 +49,7 @@
          $this->companyManagement = $companyManagement;
          $this->customer = $customer;
          $this->acl = $acl;
+         $this->resourceConnection = $resourceConnection;
      }
 
      public function install(array $fixtures)
@@ -87,6 +90,7 @@
                      $userId = $this->customer->get(trim($companyCustomerEmail))->getId();
                      //assign role to user
                      $this->acl->assignUserDefaultRole($userId, $company->getId());
+
                      //delete structure that the user belongs to
                      $userStruct = $this->getStructureByEntity($userId,0);
                      if($userStruct){
@@ -102,8 +106,17 @@
              }
 
          }
+         $this->enablePurchaseOnCredit();
          $this->__destruct();
      }
+
+     private function enablePurchaseOnCredit(){
+         //this is not the proper method, but was done in interest of deadline
+         $connection = $this->resourceConnection->getConnection();
+         $tableName = $connection->getTableName('company_permissions');
+         $sql = "update " . $tableName . " set permission = 'allow' where resource_id = 'Magento_Sales::payment_account'";
+         $connection->query($sql);
+      }
      private function addTeamToTree($teamId,$parentId){
          //path is structure_id of admin user / structure_id of team)
          $newStruct = $this->structure->create();
