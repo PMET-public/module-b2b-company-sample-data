@@ -13,19 +13,62 @@
  {
 
      /**
-      * @var \Magento\Framework\App\Config\ScopeConfigInterface
+      * @var SampleDataContext
       */
      protected $sampleDataContext;
+
+     /**
+      * @var \Magento\Company\Model\TeamFactory
+      */
      protected $teamFactory;
-     protected $rulesFactory;
+
+     /**
+      * @var \Magento\Company\Model\StructureRepository
+      */
      protected $structureRepository;
+
+     /**
+      * @var \Magento\Framework\Api\SearchCriteriaBuilder
+      */
      protected $searchCriteriaBuilder;
+
+     /**
+      * @var \Magento\Company\Model\CompanyRepository
+      */
      protected $companyRepository;
+
+     /**
+      * @var \Magento\Company\Model\CompanyManagement
+      */
      protected $companyManagement;
+     /**
+      * @var \Magento\Customer\Api\CustomerRepositoryInterface
+      */
      protected $customer;
+
+     /**
+      * @var \Magento\Company\Api\AclInterface
+      */
      protected $acl;
+
+     /**
+      * @var \Magento\Framework\App\ResourceConnection
+      */
      protected $resourceConnection;
 
+     /**
+      * Team constructor.
+      * @param SampleDataContext $sampleDataContext
+      * @param \Magento\Company\Model\TeamFactory $teamFactory
+      * @param \Magento\Company\Model\StructureFactory $structure
+      * @param \Magento\Company\Model\StructureRepository $structureRepository
+      * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
+      * @param \Magento\Company\Model\CompanyRepository $companyRepository
+      * @param \Magento\Company\Model\CompanyManagement $companyManagement
+      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customer
+      * @param \Magento\Company\Api\AclInterface $acl
+      * @param \Magento\Framework\App\ResourceConnection $resourceConnection
+      */
      public function __construct(
          SampleDataContext $sampleDataContext,
          \Magento\Company\Model\TeamFactory $teamFactory,
@@ -52,6 +95,9 @@
          $this->resourceConnection = $resourceConnection;
      }
 
+     /**
+      * @param array $fixtures
+      */
      public function install(array $fixtures)
      {
 
@@ -107,7 +153,6 @@
 
          }
          $this->enablePurchaseOnCredit();
-         $this->__destruct();
      }
 
      private function enablePurchaseOnCredit(){
@@ -117,6 +162,12 @@
          $sql = "update " . $tableName . " set permission = 'allow' where resource_id = 'Magento_Sales::payment_account'";
          $connection->query($sql);
       }
+
+     /**
+      * @param int $teamId
+      * @param int $parentId
+      * @return \Magento\Company\Model\Structure
+      */
      private function addTeamToTree($teamId,$parentId){
          //path is structure_id of admin user / structure_id of team)
          $newStruct = $this->structure->create();
@@ -130,6 +181,13 @@
          $newStruct->save();
          return $newStruct;
      }
+
+     /**
+      * @param int $userId
+      * @param int $parentId
+      * @param string $path
+      * @return \Magento\Company\Model\Structure
+      */
      private function addUserToTeamTree($userId,$parentId,$path){
          $newStruct = $this->structure->create();
          $newStruct->setEntityId($userId);
@@ -142,6 +200,11 @@
          $newStruct->save();
          return $newStruct;
      }
+
+     /**
+      * @param string $companyName
+      * @return \Magento\Company\Api\Data\CompanyInterface|mixed
+      */
      private function getCompanyByName($companyName){
          $builder = $this->searchCriteriaBuilder;
          $builder->addFilter('company_name', $companyName);
@@ -149,23 +212,18 @@
          //$companyId = reset($companyStructures)->getDataByKey('entity_id');
          return reset($companyStructures);
      }
+
+     /**
+      * @param $entityId
+      * @param $entityType
+      * @return \Magento\Company\Api\Data\StructureInterface|mixed
+      */
      private function getStructureByEntity($entityId,$entityType){
          $builder = $this->searchCriteriaBuilder;
          $builder->addFilter('entity_id', $entityId);
          $builder->addFilter('entity_type',$entityType);
          $structures = $this->structureRepository->getList($builder->create())->getItems();
          return reset($structures);
-     }
-     public function __destruct(){
-         $this->fixtureManager = null;
-         $this->csvReader =null;
-         $this->teamFactory = null;
-         $this->structure = null;
-         $this->structureRepository = null;
-         $this->searchCriteriaBuilder = null;
-         $this->companyRepository = null;
-         $this->companyManagement = null;
-         $this->customer = null;
      }
 
  }

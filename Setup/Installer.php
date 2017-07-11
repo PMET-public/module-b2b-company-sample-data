@@ -11,18 +11,34 @@ use Magento\Framework\Setup;
 class Installer implements Setup\SampleData\InstallerInterface
 {
 
+    /**
+     * @var \MagentoEse\B2BCompanySampleData\Model\Company
+     */
     protected $companySetup;
+
+    /**
+     * @var \MagentoEse\B2BCompanySampleData\Model\Customer
+     */
     protected $customerSetup;
+
+    /**
+     * @var \MagentoEse\B2BCompanySampleData\Model\Salesrep
+     */
     protected $salesrepSetup;
+
+    /**
+     * @var \MagentoEse\B2BCompanySampleData\Model\Team
+     */
     protected $teamSetup;
-    protected $catalogSetup;
-    protected $sharedCatalogConfig;
-    protected $tierPricing;
-    protected $relatedProducts;
-    protected $sampleOrder;
-    protected $index;
 
 
+    /**
+     * Product constructor.
+     * @param \MagentoEse\B2BCompanySampleData\Model\Company $companySetup
+     * @param \MagentoEse\B2BCompanySampleData\Model\Customer $customerSetup
+     * @param \MagentoEse\B2BCompanySampleData\Model\Salesrep $salesrepSetup
+     * @param \MagentoEse\B2BCompanySampleData\Model\Team $teamSetup
+     */
     public function __construct(
         \MagentoEse\B2BCompanySampleData\Model\Company $companySetup,
         \MagentoEse\B2BCompanySampleData\Model\Customer $customerSetup,

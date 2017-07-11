@@ -14,16 +14,32 @@
  {
 
      /**
-      * @var \Magento\Framework\App\Config\ScopeConfigInterface
+      * @var SampleDataContext
       */
      protected $sampleDataContext;
+
+     /**
+      * @var \Magento\User\Model\UserFactory
+      */
      protected $user;
+
+     /**
+      * @var \Magento\Authorization\Model\RoleFactory
+      */
      protected $roleFactory;
+
+     /**
+      * @var \Magento\Authorization\Model\RulesFactory
+      */
      protected $rulesFactory;
 
-     //protected $state;
-
-
+     /**
+      * Salesrep constructor.
+      * @param SampleDataContext $sampleDataContext
+      * @param \Magento\User\Model\UserFactory $user
+      * @param \Magento\Authorization\Model\RoleFactory $roleFactory
+      * @param \Magento\Authorization\Model\RulesFactory $rulesFactory
+      */
      public function __construct(
          SampleDataContext $sampleDataContext,
          \Magento\User\Model\UserFactory $user,
@@ -38,6 +54,9 @@
          $this->rulesFactory = $rulesFactory;
      }
 
+     /**
+      * @param array $fixtures
+      */
      public function install(array $fixtures)
      {
          /**
@@ -88,13 +107,5 @@
                  $userRole->save();
              }
          }
-        $this->__destruct();
-     }
-     public function __destruct(){
-         $this->fixtureManager = null;
-         $this->csvReader = null;
-         $this->user = null;
-         $this->roleFactory = null;
-         $this->rulesFactory = null;
      }
  }

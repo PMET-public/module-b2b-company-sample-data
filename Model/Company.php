@@ -13,16 +13,48 @@
  {
 
      /**
-      * @var \Magento\Framework\App\Config\ScopeConfigInterface
+      * @var \Magento\Framework\Setup\SampleData\Context
       */
      protected $sampleDataContext;
+
+     /**
+      * @var \Magento\Company\Model\Customer\Company
+      */
      protected $companyCustomer;
+
+     /**
+      * @var \Magento\Customer\Api\CustomerRepositoryInterface
+      */
      protected $customer;
+
+     /**
+      * @var \Magento\Company\Model\ResourceModel\Customer
+      */
+     protected $customerResource;
+
+     /**
+      * @var \Magento\Company\Api\Data\StructureInterfaceFactory
+      */
      protected $structure;
+
+     /**
+      * @var float
+      */
      protected $creditLimit;
+
+     /**
+      * @var \Magento\CompanyCredit\Api\CreditLimitManagementInterface
+      */
      protected $creditLimitManagement;
 
-
+     /**
+      * @param SampleDataContext $sampleDataContext
+      * @param \Magento\Company\Model\Customer\Company $companyCustomer
+      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customer
+      * @param \Magento\Company\Model\ResourceModel\Customer $customerResource
+      * @param \Magento\Company\Api\Data\StructureInterfaceFactory $structure
+      * @param  \Magento\CompanyCredit\Api\CreditLimitManagementInterface $creditLimitManagement
+      */
      public function __construct(
          SampleDataContext $sampleDataContext,
          \Magento\Company\Model\Customer\Company $companyCustomer,
@@ -41,6 +73,9 @@
          $this->creditLimitManagement = $creditLimitManagement;
      }
 
+     /**
+      * @param array $fixtures
+      */
      public function install(array $fixtures)
      {
 
@@ -82,9 +117,13 @@
 
              }
          }
-         $this->__destruct();
-
      }
+
+
+     /**
+      * @param \Magento\Company\Model\Customer\Company $newCompany
+      * @param \Magento\Company\Model\Customer\Company $companyCustomer
+      */
      private function addCustomerToCompany($newCompany,$companyCustomer){
 
          //assign to company
@@ -96,6 +135,11 @@
              $this->customerResource->saveAdvancedCustomAttributes($companyAttributes);
          }
      }
+
+     /**
+      * @param int $customerId
+      * @param int $parentId
+      */
      private function addToTree($customerId,$parentId){
          $newStruct = $this->structure->create();
          $newStruct->setEntityId($customerId);
@@ -104,14 +148,5 @@
          $newStruct->setPath('1/2');
          $newStruct->setLevel(1);
          $newStruct->save();
-     }
-     public function __destruct(){
-         $this->fixtureManager = null;
-         $this->csvReader = null;
-         $this->companyCustomer = null;
-         $this->customer = null;
-         $this->customerResource = null;
-         $this->structure = null;
-         $this->creditLimitManagement = null;
      }
  }
