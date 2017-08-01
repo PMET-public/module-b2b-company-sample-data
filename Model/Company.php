@@ -48,12 +48,19 @@
      protected $creditLimitManagement;
 
      /**
+      * @var \Magento\User\Api\Data\UserInterfaceFactory
+      */
+     protected $userFactory;
+
+     /**
+      * Company constructor.
       * @param SampleDataContext $sampleDataContext
       * @param \Magento\Company\Model\Customer\Company $companyCustomer
       * @param \Magento\Customer\Api\CustomerRepositoryInterface $customer
       * @param \Magento\Company\Model\ResourceModel\Customer $customerResource
       * @param \Magento\Company\Api\Data\StructureInterfaceFactory $structure
-      * @param  \Magento\CompanyCredit\Api\CreditLimitManagementInterface $creditLimitManagement
+      * @param \Magento\CompanyCredit\Api\CreditLimitManagementInterface $creditLimitManagement
+      * @param \Magento\User\Api\Data\UserInterfaceFactory $userInterfaceFactory
       */
      public function __construct(
          SampleDataContext $sampleDataContext,
@@ -61,7 +68,8 @@
          \Magento\Customer\Api\CustomerRepositoryInterface $customer,
          \Magento\Company\Model\ResourceModel\Customer $customerResource,
         \Magento\Company\Api\Data\StructureInterfaceFactory $structure,
-        \Magento\CompanyCredit\Api\CreditLimitManagementInterface $creditLimitManagement
+        \Magento\CompanyCredit\Api\CreditLimitManagementInterface $creditLimitManagement,
+        \Magento\User\Model\UserFactory $userFactory
      )
      {
          $this->fixtureManager = $sampleDataContext->getFixtureManager();
@@ -71,6 +79,7 @@
          $this->customerResource = $customerResource;
          $this->structure = $structure;
          $this->creditLimitManagement = $creditLimitManagement;
+         $this->userFactory = $userFactory;
      }
 
      /**
@@ -94,9 +103,16 @@
                  $data['company_customers'] = explode(",", $data['company_customers']);
                  //get customer for admin user
                  $adminCustomer = $this->customer->get($data['admin_email']);
+                 //get sales rep
+                 $salesRep = $this->userFactory->create();
+                 $salesRep->loadByUsername($data['sales_rep']);
+
+                 //$salesRep = $this->customer->get($data['sales_rep']);
                  $data['company_email']=$data['admin_email'];
                  //create company
                  $newCompany = $this->companyCustomer->createCompany($adminCustomer, $data);
+                 $newCompany->setSalesRepresentativeId($salesRep->getId());
+                 $newCompany->save();
                  //set credit limit
                  $creditLimit = $this->creditLimitManagement->getCreditByCompanyId($newCompany->getId());
                  $creditLimit->setCreditLimit($data['credit_limit']);
