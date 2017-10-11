@@ -18,7 +18,7 @@
             <module name="MagentoEse_B2bAdminConfigurations"/>
             <module name="MagentoEse_B2BCatalogSampleData"/>
             <module name="MagentoEse_SalesSampleData"/>
-            <module name="FireGento_FastSimpleImport2"/>
+            <module name="FireGento_FastSimpleImport"/>
         </sequence>
     </module>
 </config>
