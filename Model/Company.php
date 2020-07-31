@@ -3,7 +3,7 @@
  * Copyright © 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-  
+
  namespace MagentoEse\B2BCompanySampleData\Model;
 
  use Magento\Framework\Setup\SampleData\Context as SampleDataContext;
@@ -112,6 +112,7 @@
                  //create company
                  $newCompany = $this->companyCustomer->createCompany($adminCustomer, $data);
                  $newCompany->setSalesRepresentativeId($salesRep->getId());
+                 $newCompany->setIsPurchaseOrderEnabled(true);
                  $newCompany->save();
                  //set credit limit
                  $creditLimit = $this->creditLimitManagement->getCreditByCompanyId($newCompany->getId());

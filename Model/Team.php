@@ -3,11 +3,22 @@
  * Copyright © 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-  
+
  namespace MagentoEse\B2BCompanySampleData\Model;
 
+ use Magento\Company\Api\AclInterface;
+ use Magento\Company\Model\CompanyManagement;
+ use Magento\Company\Model\CompanyRepository;
+ use Magento\Company\Model\StructureFactory;
+ use Magento\Company\Model\StructureRepository;
+ use Magento\Company\Model\TeamFactory;
+ use Magento\Customer\Api\CustomerRepositoryInterface;
+ use Magento\Framework\Api\SearchCriteriaBuilder;
+ use Magento\Framework\App\ResourceConnection;
  use Magento\Framework\Setup\SampleData\Context as SampleDataContext;
-
+ use Magento\Company\Api\RoleRepositoryInterface;
+ use Magento\User\Block\Role;
+ use Magento\Company\Api\Data\RoleInterface;
 
  class Team
  {
@@ -18,68 +29,72 @@
      protected $sampleDataContext;
 
      /**
-      * @var \Magento\Company\Model\TeamFactory
+      * @var TeamFactory
       */
      protected $teamFactory;
 
      /**
-      * @var \Magento\Company\Model\StructureRepository
+      * @var StructureRepository
       */
      protected $structureRepository;
 
      /**
-      * @var \Magento\Framework\Api\SearchCriteriaBuilder
+      * @var SearchCriteriaBuilder
       */
      protected $searchCriteriaBuilder;
 
      /**
-      * @var \Magento\Company\Model\CompanyRepository
+      * @var CompanyRepository
       */
      protected $companyRepository;
 
      /**
-      * @var \Magento\Company\Model\CompanyManagement
+      * @var CompanyManagement
       */
      protected $companyManagement;
      /**
-      * @var \Magento\Customer\Api\CustomerRepositoryInterface
+      * @var CustomerRepositoryInterface
       */
      protected $customer;
 
      /**
-      * @var \Magento\Company\Api\AclInterface
+      * @var AclInterface
       */
      protected $acl;
 
      /**
-      * @var \Magento\Framework\App\ResourceConnection
+      * @var ResourceConnection
       */
      protected $resourceConnection;
+
+     /** @var RoleRepositoryInterface */
+     protected $roleRepositoryInterface;
 
      /**
       * Team constructor.
       * @param SampleDataContext $sampleDataContext
-      * @param \Magento\Company\Model\TeamFactory $teamFactory
-      * @param \Magento\Company\Model\StructureFactory $structure
-      * @param \Magento\Company\Model\StructureRepository $structureRepository
-      * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
-      * @param \Magento\Company\Model\CompanyRepository $companyRepository
-      * @param \Magento\Company\Model\CompanyManagement $companyManagement
-      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customer
-      * @param \Magento\Company\Api\AclInterface $acl
-      * @param \Magento\Framework\App\ResourceConnection $resourceConnection
+      * @param TeamFactory $teamFactory
+      * @param StructureFactory $structure
+      * @param StructureRepository $structureRepository
+      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+      * @param CompanyRepository $companyRepository
+      * @param CompanyManagement $companyManagement
+      * @param CustomerRepositoryInterface $customer
+      * @param AclInterface $acl
+      * @param ResourceConnection $resourceConnection
       */
      public function __construct(
          SampleDataContext $sampleDataContext,
-         \Magento\Company\Model\TeamFactory $teamFactory,
-         \Magento\Company\Model\StructureFactory $structure,
-         \Magento\Company\Model\StructureRepository $structureRepository,
-         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
-         \Magento\Company\Model\CompanyRepository $companyRepository,
-         \Magento\Company\Model\CompanyManagement $companyManagement,
-         \Magento\Customer\Api\CustomerRepositoryInterface $customer,
-         \Magento\Company\Api\AclInterface $acl,
-        \Magento\Framework\App\ResourceConnection $resourceConnection
+         TeamFactory $teamFactory,
+         StructureFactory $structure,
+         StructureRepository $structureRepository,
+         SearchCriteriaBuilder $searchCriteriaBuilder,
+         CompanyRepository $companyRepository,
+         CompanyManagement $companyManagement,
+         CustomerRepositoryInterface $customer,
+         AclInterface $acl,
+         ResourceConnection $resourceConnection,
+         RoleRepositoryInterface $roleRepositoryInterface
      )
      {
          $this->fixtureManager = $sampleDataContext->getFixtureManager();
@@ -93,6 +108,7 @@
          $this->customer = $customer;
          $this->acl = $acl;
          $this->resourceConnection = $resourceConnection;
+         $this->roleRepositoryInterface = $roleRepositoryInterface;
      }
 
      /**
@@ -129,14 +145,21 @@
                  $teamId =($newTeam->getId());
                  //put team under admin users
                  $teamStruct = $this->addTeamToTree($teamId,$parentId);
-
-                 //loop over team members
+                 //get sales role
+                 $filter = $this->searchCriteriaBuilder;
+                 $filter->addFilter(RoleInterface::ROLE_NAME,'Purchaser','eq');
+                 $filter->addFilter(RoleInterface::COMPANY_ID,$company->getId(),'eq');
+                 $roleList = $this->roleRepositoryInterface->getList($filter->create())->getItems();
+                 foreach($roleList as $role){
+                     break;
+                 }
+                  //loop over team members
                  foreach ($data['members'] as $companyCustomerEmail) {
                      //get user id from email
                      $userId = $this->customer->get(trim($companyCustomerEmail))->getId();
                      //assign role to user
                      $this->acl->assignUserDefaultRole($userId, $company->getId());
-
+                     $this->acl->assignRoles($userId,[$role]);
                      //delete structure that the user belongs to
                      $userStruct = $this->getStructureByEntity($userId,0);
                      if($userStruct){
@@ -152,7 +175,7 @@
              }
 
          }
-         $this->enablePurchaseOnCredit();
+         //$this->enablePurchaseOnCredit();
      }
 
      private function enablePurchaseOnCredit(){
