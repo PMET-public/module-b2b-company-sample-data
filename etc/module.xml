@@ -18,6 +18,7 @@
             <module name="MagentoEse_B2bAdminConfigurations"/>
 <!--            <module name="MagentoEse_B2BCatalogSampleData"/>-->
             <module name="MagentoEse_SalesSampleData"/>
+            <module name="MagentoEse_DataInstall"/>
         </sequence>
     </module>
 </config>
