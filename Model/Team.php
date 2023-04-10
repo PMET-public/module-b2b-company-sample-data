@@ -69,6 +69,24 @@
 
      /** @var RoleRepositoryInterface */
      protected $roleRepositoryInterface;
+    
+     /**
+      * 
+      * @var FixtureManager
+      */
+      protected $fixtureManager;
+     
+      /**
+       * 
+       * @var Csv
+       */
+      protected $csvReader;
+
+      /**
+       * 
+       * @var Magento\Company\Model\StructureFactory
+       */
+      protected $structure;
 
      /**
       * Team constructor.

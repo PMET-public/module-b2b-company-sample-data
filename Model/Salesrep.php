@@ -33,6 +33,18 @@
       */
      protected $rulesFactory;
 
+      /**
+      * 
+      * @var FixtureManager
+      */
+      protected $fixtureManager;
+     
+      /**
+       * 
+       * @var Csv
+       */
+      protected $csvReader;
+
      /**
       * Salesrep constructor.
       * @param SampleDataContext $sampleDataContext

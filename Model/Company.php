@@ -6,8 +6,9 @@
 
  namespace MagentoEse\B2BCompanySampleData\Model;
 
- use Magento\Framework\Setup\SampleData\Context as SampleDataContext;
-
+use Magento\Framework\File\Csv;
+use Magento\Framework\Setup\SampleData\Context as SampleDataContext;
+use Magento\Framework\Setup\SampleData\FixtureManager;
 
  class Company
  {
@@ -51,6 +52,18 @@
       * @var \Magento\User\Api\Data\UserInterfaceFactory
       */
      protected $userFactory;
+
+     /**
+      * 
+      * @var FixtureManager
+      */
+     protected $fixtureManager;
+     
+     /**
+      * 
+      * @var Csv
+      */
+     protected $csvReader;
 
      /**
       * Company constructor.
